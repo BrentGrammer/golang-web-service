@@ -14,3 +14,18 @@
 
 - Files in this folder should be compiled to a binary
 - Can be moved into a bin directory later on
+
+### cmd/api/handlers.go
+- Handlers are decoupled into the cmd/api/handlers.go file
+
+## Returning Errors
+
+### Constraining what methods are allowed for an Endpoint:
+```go
+func MyHandler(w http.ResponseWriter, r *http.Request) {
+    if (r.Method != http.MethodGet) {
+        http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+        return // make sure to return and exit the handler!
+    }
+}
+```
