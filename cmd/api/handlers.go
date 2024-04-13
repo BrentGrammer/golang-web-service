@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+	"strconv"
 
 	"github.com/BrentGrammer/webservice/internal/data"
 )
@@ -38,10 +39,45 @@ func (app *application) healthcheck(w http.ResponseWriter, r *http.Request) {
 	w.Write(js)
 }
 
+// get books list or create a new book
 func (app *application) getCreateBooksHandler(w http.ResponseWriter, r *http.Request) {
 	// accepts GET and POST requests
 	if r.Method == http.MethodGet {
-		fmt.Fprintln(w, "Display a list of books")
+		books := []data.Book{
+			{
+				ID: 1,
+				CreatedAt: time.Now(),
+				Title: "The Darkening of Trstram",
+				Published: 1998,
+				Pages: 300,
+				Genres: []string{"Fiction","Thriller"},
+				Rating: 4.5,
+				Version: 1,
+			},
+			{
+				ID: 2,
+				CreatedAt: time.Now(),
+				Title: "The legacy of Deckard",
+				Published: 2007,
+				Pages: 232,
+				Genres: []string{"Fiction","Adventure"},
+				Rating: 4.9,
+				Version: 1,
+			},
+		}
+
+		js, err := json.Marshal(books)
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return 
+		}
+
+		js = append(js, '\n')
+
+		w.Header().Set("Content-Type", "application/json")
+
+		w.Write(js)
+		return 
 	}
 	
 	if r.Method == http.MethodPost {
@@ -73,7 +109,29 @@ func (app *application) getBook(w http.ResponseWriter, r *http.Request) {
 		// if we can't parse to integer we can't continue
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 	}
-	fmt.Fprintf(w, "Display the details of book with id: %d", idInt)
+
+	book := data.Book{
+		ID: idInt,
+		CreatedAt: time.Now(),
+		Title: "Echoes in the Darkness",
+		Published: 2019,
+		Pages: 300,
+		Genres: []string{"Fiction","Thriller"},
+		Rating: 4.5,
+		Version: 1,
+	}
+
+	js, err := json.Marshal(book) // will convert vals to correct types based on the struct
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return 
+	}
+
+	js = append(js, '\n') // just for formatting
+
+	w.Header().Set("Content-Type", "application/json")
+
+	w.Write(js)
 }
 
 func (app *application) updateBook(w http.ResponseWriter, r *http.Request) {

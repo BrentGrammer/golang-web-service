@@ -2,8 +2,6 @@ package main
 
 import (
 	"net/http"
-	"strconv"
-	"fmt"
 )
 
 // create methon on our application type that instantiates the routes
