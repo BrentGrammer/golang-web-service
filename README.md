@@ -25,6 +25,10 @@
 
 - Handlers are decoupled into the cmd/api/handlers.go file
 
+### internal folder
+- "internal" means that any package here cannot be imported from outside this project (the code/files are not relevant to any outside project but our own - they are internal to the project)
+- `internal/data`: Use this folder to hold data types and models
+
 ## Returning Errors
 
 ### Constraining what methods are allowed for an Endpoint:
