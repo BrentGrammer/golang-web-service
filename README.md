@@ -16,16 +16,19 @@
 - Can be moved into a bin directory later on
 
 ### Routes
+
 - Place in `cmd/api/routes.go` to separate routes
 - create mux server in here for the routes
 - Move calls to HandlFunc() into this file
 
 ### cmd/api/handlers.go
+
 - Handlers are decoupled into the cmd/api/handlers.go file
 
 ## Returning Errors
 
 ### Constraining what methods are allowed for an Endpoint:
+
 ```go
 func MyHandler(w http.ResponseWriter, r *http.Request) {
     if (r.Method != http.MethodGet) {
