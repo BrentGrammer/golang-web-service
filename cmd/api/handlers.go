@@ -1,4 +1,3 @@
-// we keep the handlers in the main package still
 package main
 
 import (
@@ -13,7 +12,18 @@ func (app *application) healthcheck(w http.ResponseWriter, r *http.Request) {
 	    return
 	}
 	fmt.Fprintln(w, "status: available")
-	fmt.Fprintf(w, "environment: %s\n", cfg.)
+	fmt.Fprintf(w, "environment: %s\n", cfg.env)
 	fmt.Fprintf(w, "version: %s\n", version)
+}
+
+func (app *application) getCreateBooksHandler(w http.ResponseWriter, r *http.Request) {
+	// accepts GET and POST requests
+	if r.Method == http.MethodGet {
+		fmt.Fprintln(w, "Display a list of books")
+	}
+	
+	if r.Method == http.MethodPost {
+		fmt.Fprintln(w, "added a new book to the reading list")
+	}
 }
 

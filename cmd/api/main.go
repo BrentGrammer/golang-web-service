@@ -4,6 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"time"
+	"log"
+	"os"
 )
 
 const version = "1.0.0"
@@ -17,9 +20,10 @@ type application struct {
 	config config
 	logger *log.Logger
 }
+// use our config struct to set details of our app
+var cfg config
+
 func main() {
-	// use our config struct to set details of our app
-	var cfg config
 	// use the flag package to modify config details
 	// pass in mem addr of the config entries so we modify them, name of property, value and description/help
 	flag.IntVar(&cfg.port, "port", 4000, "API Server Port")
@@ -28,8 +32,9 @@ func main() {
 	flag.Parse()
 
 	
-	//instantiate a logger - write to stdout and set the date and time
-	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
+	//instantiate a logger - write to stdout, specify a prefix string, and set the date and time
+	// The | (bitwise OR) operator is used to combine these flags into a single value. This means that the logger will prepend each log message with the date and time.
+	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime) // Ldate and Ltime is local date and local time
 	
 	app := &application{
 		config: cfg, // the config set with the flag package above
@@ -39,17 +44,18 @@ func main() {
 	// create var for the port using our config setting
 	addr := fmt.Sprintf(":%d", cfg.port)
 
-	// Create a locally scoped MuxServer
-	mux := http.NewServeMux()
-	// call handlefunc off of our serve mux
-	mux.HandleFunc("/v1/healthcheck", app.healthcheck) // healthcheck attached as receiver method in handlers.go
+	// create server type that instantiates our separated routes in routes.go and sets other params
+	srv := &http.Server{
+		Addr: addr,
+		Handler: app.route(),
+		IdleTimeout: time.Minute,
+		ReadTimeout: 10 * time.Second,
+		WriteTimeout: 30 * time.Second,
+	}
 
-	err := http.ListenAndServe(addr, mux) // Note: passing nil uses a default serve mux so you don't have to create one
-	// when using default ServeMux it is a global variable so it's possible to inject handlers by just using http.HandleFunc anywhere without specifying a server
-	// To get around this, we can create our locally scoped serve mux ourselves and pass it in as shown here.
-
-	logger.Printf("Starting %s server on port %s", cfg.env, addr)
+	logger.Printf("starting %s server on port %s", cfg.env, addr)
+	err := srv.ListenAndServe()
 	if err != nil {
-		fmt.Println(err)
+		logger.Fatal(err)
 	}
 }
