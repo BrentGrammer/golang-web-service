@@ -10,4 +10,6 @@ RUN go mod tidy
 
 EXPOSE 4000
 
-CMD ["go","run","cmd/api/main.go"]
+WORKDIR /app/cmd/api
+# run go run . in the folder where main.go is to prevent passing in other files to include/compile
+CMD ["go","run","."]
