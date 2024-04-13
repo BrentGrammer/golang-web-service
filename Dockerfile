@@ -8,6 +8,6 @@ COPY . .
 
 RUN go mod tidy
 
-EXPOSE 8080
+EXPOSE 4000
 
 CMD ["go","run","cmd/api/main.go"]

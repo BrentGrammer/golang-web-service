@@ -1,0 +1,7 @@
+name: "Go-Web-Service"
+
+services:
+  api:
+    build: .
+    ports:
+      - 4000:4000
