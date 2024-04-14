@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 	"strconv"
-	"io/ioutil"
+	// "io/ioutil"
 
 	"github.com/BrentGrammer/webservice/internal/data"
 )
@@ -84,14 +84,17 @@ func (app *application) getCreateBooksHandler(w http.ResponseWriter, r *http.Req
 			Rating float64 `json:"rating"`
 		}
 
+		// old way of getting body - left for reference
 		// get the body of the request
-		body, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-			return 
-		}
-		// we want to convert the body of the request to a go struct, pass in mem addr of the input struct to mutate it
-		err = json.Unmarshal(body, &input)
+		// body, err := ioutil.ReadAll(r.Body)
+		// if err != nil {
+		// 	http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		// 	return 
+		// }
+		// // we want to convert the body of the request to a go struct, pass in mem addr of the input struct to mutate it
+		// err = json.Unmarshal(body, &input)
+
+		err := app.readJSON(w, r, &input)
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return
@@ -173,15 +176,21 @@ func (app *application) updateBook(w http.ResponseWriter, r *http.Request) {
 		Version: 1,
 	}
 
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return 
-	}
+	// Left for reference (old way of reading json request)
+	// body, err := ioutil.ReadAll(r.Body)
+	// if err != nil {
+	// 	http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+	// 	return 
+	// }
 
 	// unmarshal the info from the request into the input struct
-	err = json.Unmarshal(body, &input) // load data into the input struct
-	if err != nil{
+	// err = json.Unmarshal(body, &input) // load data into the input struct
+	// if err != nil{
+	// 	http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+	// }
+
+	err = app.readJSON(w, r, &input) // pass a pointer (mem addr) of input
+	if err != nil {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 	}
 
