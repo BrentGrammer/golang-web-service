@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 	"strconv"
+	"io/ioutil"
 
 	"github.com/BrentGrammer/webservice/internal/data"
 )
@@ -74,7 +75,29 @@ func (app *application) getCreateBooksHandler(w http.ResponseWriter, r *http.Req
 	}
 	
 	if r.Method == http.MethodPost {
-		fmt.Fprintln(w, "added a new book to the reading list")
+		// contains details of a book structure that we expect from a request that we will unmarshal into a go object
+		var input struct {
+			Title string `json:"title"`
+			Published int `json:"published"`
+			Pages int `json:"pages"`
+			Genres []string `json:"genres"`
+			Rating float64 `json:"rating"`
+		}
+
+		// get the body of the request
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+			return 
+		}
+		// we want to convert the body of the request to a go struct, pass in mem addr of the input struct to mutate it
+		err = json.Unmarshal(body, &input)
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+			return
+		}
+
+		fmt.Fprintf(w, "%v\n", input)
 	}
 }
 
