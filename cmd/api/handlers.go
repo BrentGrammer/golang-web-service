@@ -67,7 +67,7 @@ func (app *application) getCreateBooksHandler(w http.ResponseWriter, r *http.Req
 		}
         // use helper to marshal json and return json response
 		// this also uses the inline scoped variable in if statement (var; condition to check)
-		if err := app.writeJSON(w, http.StatusOK, books); err != nil {
+		if err := app.writeJSON(w, http.StatusOK, envelope{"books": books}); err != nil {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
@@ -114,7 +114,7 @@ func (app *application) getBook(w http.ResponseWriter, r *http.Request) {
 		Version: 1,
 	}
 
-	if err := app.writeJSON(w, http.StatusOK, book); err != nil {
+	if err := app.writeJSON(w, http.StatusOK, envelope{"book": book}); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
