@@ -151,7 +151,58 @@ func (app *application) updateBook(w http.ResponseWriter, r *http.Request) {
 		// if we can't parse to integer we can't continue
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 	}
-	fmt.Fprintf(w, "Update the details of book with id: %d", idInt)
+	
+	// Use pointers so that we can modify the existing struct in place instead of having to create a new one.
+	var input struct {
+		Title *string `json:"title"` // in this case json tags tell us what we look for in the request json
+		Published *int `json:"published"`
+		Pages *int `json:"pages"`
+		Genres []string `json:"genres"`
+		Rating *float32 `json:"rating"`
+	}
+
+	// this is just a mock book that acts as the existing record
+	book := data.Book{
+		ID: idInt,
+		CreatedAt: time.Now(),
+		Title: "Echoes in the Darkness",
+		Published: 2019,
+		Pages: 300,
+		Genres: []string{"Fiction","Thriller"},
+		Rating: 4.5,
+		Version: 1,
+	}
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return 
+	}
+
+	// unmarshal the info from the request into the input struct
+	err = json.Unmarshal(body, &input) // load data into the input struct
+	if err != nil{
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+	}
+
+    // check the input values and update the record if they are not nil
+	if input.Title != nil{
+		book.Title = *input.Title 
+	}
+	if input.Published != nil{
+		book.Published = *input.Published
+	}
+	if input.Pages != nil {
+		book.Pages = *input.Pages
+	}
+	if len(input.Genres) > 0{
+		book.Genres = input.Genres
+	}
+	if input.Rating != nil{
+		book.Rating = *input.Rating
+	}
+
+	fmt.Fprintf(w, "%v\n", book)
 }
 
 func (app *application) deleteBook(w http.ResponseWriter, r *http.Request) {
