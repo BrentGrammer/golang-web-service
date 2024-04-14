@@ -7,3 +7,35 @@ services:
       dockerfile: Dockerfile
     ports:
       - 4000:4000
+    depends_on:
+      database:
+        condition: service_healthy
+  database: # this is the host you use in the connection string (the service name)
+    image: postgres:14.11
+    restart: always
+    container_name: go-web-service-db
+    environment: # these need to be used in the connection string
+      - POSTGRES_DB=readinglist
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./.containers/go-web-service-db-data:/var/lib/postgresql/data # persists data saved to your machine if container shut down
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d readingList -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  # flyway:
+  #   image: flyway/flyway
+  #   command: -url=jdbc:mysql://db -schemas=myschema -user=root -password=P@ssw0rd -connectRetries=60 migrate
+  #   volumes:
+  #     - .:/flyway/sql
+  #   depends_on:
+  #     database:
+  #       condition: service_healthy
+volumes:
+  go-web-service-db-data:
+
+  # scripts: https://stackoverflow.com/questions/78021812/how-to-start-a-postgresql-instance-from-bash-script-within-a-docker-container

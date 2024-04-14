@@ -26,6 +26,7 @@
 - Handlers are decoupled into the cmd/api/handlers.go file
 
 ### internal folder
+
 - "internal" means that any package here cannot be imported from outside this project (the code/files are not relevant to any outside project but our own - they are internal to the project)
 - `internal/data`: Use this folder to hold data types and models
 
@@ -40,4 +41,38 @@ func MyHandler(w http.ResponseWriter, r *http.Request) {
         return // make sure to return and exit the handler!
     }
 }
+```
+
+## Database Setup
+
+- Start the Docker container with Postgres
+- `$ psql -h localhost -p 5432 -U postgres`
+- `CREATE DATABASE readinglist;`
+- `CREATE ROLE readinglist WITH LOGIN PASSWORD 'pa55w0rd';`
+- `\c readinglist` change to the new db
+- Create tables
+
+```sql
+CREATE TABLE IF NOT EXISTS books (
+    id bigserial PRIMARY KEY,
+    created_at timestamp(0) with time zone NOT NULL DEFAULT NOW(),
+    title text NOT NULL,
+    published integer NOT NULL,
+    pages integer NOT NULL,
+    genres text[] NOT NULL,
+    rating real NOT NULL,
+    version integer NOT NULL DEFAULT 1
+);
+```
+
+- grant permissions
+
+```sql
+GRANT SELECT, INSERT, UPDATE, DELETE ON books TO readinglist;
+```
+
+- for using primary key with bigserial we need additional permissions
+
+```sql
+GRANT USAGE, SELECT ON SEQUENCE books_id_seq TO readinglist;
 ```
