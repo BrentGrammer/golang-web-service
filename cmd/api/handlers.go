@@ -65,19 +65,12 @@ func (app *application) getCreateBooksHandler(w http.ResponseWriter, r *http.Req
 				Version: 1,
 			},
 		}
-
-		js, err := json.Marshal(books)
-		if err != nil {
+        // use helper to marshal json and return json response
+		// this also uses the inline scoped variable in if statement (var; condition to check)
+		if err := app.writeJSON(w, http.StatusOK, books); err != nil {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-			return 
+			return
 		}
-
-		js = append(js, '\n')
-
-		w.Header().Set("Content-Type", "application/json")
-
-		w.Write(js)
-		return 
 	}
 	
 	if r.Method == http.MethodPost {
@@ -121,17 +114,10 @@ func (app *application) getBook(w http.ResponseWriter, r *http.Request) {
 		Version: 1,
 	}
 
-	js, err := json.Marshal(book) // will convert vals to correct types based on the struct
-	if err != nil {
+	if err := app.writeJSON(w, http.StatusOK, book); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return 
+		return
 	}
-
-	js = append(js, '\n') // just for formatting
-
-	w.Header().Set("Content-Type", "application/json")
-
-	w.Write(js)
 }
 
 func (app *application) updateBook(w http.ResponseWriter, r *http.Request) {
