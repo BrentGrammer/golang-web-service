@@ -1,7 +1,8 @@
-# Web Service created with GoLang
+# Web Service created with GoLang (WIP)
 
 - Based on the [Pluralsight exercise](https://app.pluralsight.com/library/courses/go-building-web-services-applications/table-of-contents) by Josh Duffney
 - The code is heavily commented for reference and this is used as a learning and experimentation project.
+- This is a learning project and is in a WIP state. It is meant for experimenting and for reference.
 
 ## Starting the Application
 

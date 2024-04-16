@@ -20,6 +20,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - ./.containers/go-web-service-db-data:/var/lib/postgresql/data # persists data saved to your machine if container shut down
+      - ./initDB.sql:/docker-entrypoint-initdb.d/initDB.sql
     ports:
       - 5432:5432
     healthcheck:
